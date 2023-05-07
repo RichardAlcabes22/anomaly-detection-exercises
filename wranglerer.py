@@ -8,6 +8,25 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 
 
+def acquire_df():
+    ''' 
+     Acquire data from X schema using env imports, rename columns, and storing a cached version of SQL pull as a .csv.
+     Specifically, the SQL query returns a df in accordance with SQL script.
+     ''' 
+    if os.path.exists('cohorts.csv'):
+        print('local version found!')
+        return pd.read_csv('cohorts.csv', index_col=0)
+    else:
+        url = f"mysql+pymysql://{user}:{pwd}@{host}/curriculum_logs"
+
+        query = """
+        SELECT *
+        FROM cohorts;  
+        """
+        df = pd.read_sql(query, url)
+        df.to_csv('cohorts.csv',index=True)
+        return df
+
 def wrangle_nba():
     ''' 
      Acquire nba data from a .csv file and drop Team Name column
